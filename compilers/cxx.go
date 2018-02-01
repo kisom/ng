@@ -10,9 +10,13 @@ func CXX(cxx string) *ninja.Rule {
 	return ninja.NewRule("cxx", cxx+" $cxxflags -c $in -o $out")
 }
 
-var CXXFlags *ninja.Var
+var (
+	CXXFlags *ninja.Var
+	CXXRule  *ninja.Rule
+	CXXExts  = []string{"cc", "cxx", "c++"}
+)
 
-func EnableCXX(debugMode bool) {
+func EnableCXX(cxx string, debugMode bool) {
 	var debug string
 	if os.Getenv("DEBUG") != "" || debugMode {
 		debug = "-O0 -g "
@@ -27,4 +31,6 @@ func EnableCXX(debugMode bool) {
 	if len(envFlags) > 0 {
 		CXXFlags.Append(" " + envFlags)
 	}
+
+	CXXRule = ninja.NewRule("cxx", cxx+" $cxxflags -c $in -o $out")
 }

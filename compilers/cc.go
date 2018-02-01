@@ -10,9 +10,13 @@ func CC(cc string) *ninja.Rule {
 	return ninja.NewRule("cc", cc+" $cflags -c $in -o $out")
 }
 
-var CFlags *ninja.Var
+var (
+	CFlags *ninja.Var
+	CCRule *ninja.Rule
+	CCExts = []string{"c"}
+)
 
-func EnableCC(debugMode bool) {
+func EnableCC(cc string, debugMode bool) {
 	var debug string
 	if os.Getenv("DEBUG") != "" || debugMode {
 		debug = "-O0 -g "
@@ -27,4 +31,6 @@ func EnableCC(debugMode bool) {
 	if len(envFlags) > 0 {
 		CFlags.Append(" " + envFlags)
 	}
+
+	CCRule = ninja.NewRule("cc", cc+" -$cflags -c $in -o $out")
 }
