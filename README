@@ -1,0 +1,64 @@
+A ninja build plan generator for relatively simple projects. It uses a YAML
+build plan file (by default named build.yaml):
+
+----- build.yaml ----
+# compilers section is optional; ng will also check the relevant
+# environment variables, too and fill in a sensible default.
+compilers:
+  cc: clang
+  cxx: clang++
+  ld: clang++
+
+# targets is organised by language.
+targets:
+  cc:
+    # an empty sources list will trigger a search for a suitable
+    # source file (e.g. in this case, looking for ch01ex01.cc,
+    # ch01ex01.c++, etc...).
+    ch01ex01: []
+    ch01ex02:
+      - ch01ex04.cc
+  c:
+    vm:
+      - vm.c
+      - stack.c
+      - isa.c
+
+----- end build.yaml -----
+
+The above would produce the following build.ninja:
+
+----- build.ninja -----
+
+# ng compiler section: cxx
+cxxflags = -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wmissing-declarations -Wno-long-long -Werror -Wunused-variable -std=c++14 -D_XOPEN_SOURCE-I. -fno-elide-constructors -Weffc++ -fPIC
+rule cxx
+  command = clang++ $cxxflags -c $in -o $out
+
+# ng compiler section: cc
+cflags = -Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations -Wnested-externs -Winline -Wno-long-long -Wunused-variable -Wstrict-prototypes -Werror
+rule cc
+  command = clang $cflags -c $in -o $out
+
+# ng compiler section: ld
+ldflags = 
+rule ld
+  command = clang++ $ldflags -o $out $in
+
+
+# ng build rules
+build vm.o: cc vm.c
+build stack.o: cc stack.c
+build isa.o: cc isa.c
+build vm: ld vm.o stack.o isa.o
+build ch01ex04.o: cxx ch01ex04.cc
+build ch01ex02: ld ch01ex04.o
+build ch01ex01.o: cxx ch01ex01.cc
+build ch01ex01: ld ch01ex01.o
+
+----- end build.ninja -----
+
+The tool is pretty dumb and just a quick way to quickly update build
+configs. The code was hacked out quickly, rewritten once before I had
+a working version, and very ad-hoc. A half-assed attempted at adding
+some unit tests fizzled out.
