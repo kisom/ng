@@ -10,14 +10,15 @@ func CC(cc string) *ninja.Rule {
 	return ninja.NewRule("cc", cc+" $cflags -c $in -o $out")
 }
 
-var (
-	CFlags *ninja.Var
-	CCRule *ninja.Rule
-	CCExts = []string{"c"}
-)
+var CCExts = []string{"c"}
 
-func EnableCC(cc string, debugMode bool) {
-	var debug string
+func EnableCC(bp *ninja.BuildPlan, cc string, debugMode bool) {
+	var (
+		CFlags *ninja.Var
+		CCRule *ninja.Rule
+		debug  string
+	)
+
 	if os.Getenv("DEBUG") != "" || debugMode {
 		debug = "-O0 -g "
 	}
@@ -33,4 +34,13 @@ func EnableCC(cc string, debugMode bool) {
 	}
 
 	CCRule = ninja.NewRule("cc", cc+" -$cflags -c $in -o $out")
+	compiler := &ninja.Compiler{
+		Vars:  []*ninja.Var{CFlags},
+		Rules: []*ninja.Rule{CCRule},
+	}
+
+	if bp.Compilers == nil {
+		bp.Compilers = map[string]*ninja.Compiler{}
+	}
+	bp.Compilers[cc] = compiler
 }
