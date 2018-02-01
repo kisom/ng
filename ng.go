@@ -7,9 +7,8 @@ import (
 	"os"
 
 	"github.com/kisom/goutils/die"
-	"github.com/kisom/ng/compilers"
 	"github.com/kisom/ng/config"
-	"github.com/kisom/ng/ninja"
+	"github.com/kisom/ng/planner"
 )
 
 const (
@@ -36,18 +35,12 @@ func main() {
 	cfg, err := config.Parse(in)
 	die.If(err)
 
-	bp := &ninja.BuildPlan{}
-	if cfg.RequiresCC() {
-		compilers.EnableCC(bp, cfg.Compilers.CC, dbg)
+	if dbg {
+		cfg.Debug = dbg
 	}
 
-	if cfg.RequiresCXX() {
-		compilers.EnableCXX(bp, cfg.Compilers.CXX, dbg)
-		err = compilers.CXXScanTargets(cfg)
-		die.If(err)
-	}
-
-	err = bp.Plan(cfg)
+	bp := &planner.Plan{}
+	err = bp.Execute(cfg)
 	die.If(err)
 
 	if flag.NArg() == 1 {

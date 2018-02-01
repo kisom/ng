@@ -8,7 +8,7 @@ type Rule struct {
 }
 
 func (r *Rule) String() string {
-	s := "rule: " + r.name + "\n"
+	s := "rule " + r.name + "\n"
 	s += "  command = " + r.command + "\n"
 	if len(r.description) > 0 {
 		s += "  description = " + r.description + "\n"

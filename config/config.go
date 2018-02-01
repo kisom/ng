@@ -34,11 +34,12 @@ func (c *Compilers) Setup() {
 }
 
 type Targets struct {
-	CC  map[string][]string
-	CXX map[string][]string
+	CC  map[string][]string `json:"c" yaml:"c"`
+	CXX map[string][]string `json:"cc" yaml:"cc"`
 }
 
 type Config struct {
+	Debug     bool       `json:"debug" yaml:"debug"`
 	Compilers *Compilers `json:"compilers" yaml:"compilers"`
 	Targets   *Targets   `json:"targets" yaml:"targets"`
 }

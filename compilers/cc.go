@@ -6,13 +6,9 @@ import (
 	"github.com/kisom/ng/ninja"
 )
 
-func CC(cc string) *ninja.Rule {
-	return ninja.NewRule("cc", cc+" $cflags -c $in -o $out")
-}
-
 var CCExts = []string{"c"}
 
-func EnableCC(bp *ninja.BuildPlan, cc string, debugMode bool) {
+func CC(cc string, debugMode bool) *Compiler {
 	var (
 		CFlags *ninja.Var
 		CCRule *ninja.Rule
@@ -33,14 +29,9 @@ func EnableCC(bp *ninja.BuildPlan, cc string, debugMode bool) {
 		CFlags.Append(" " + envFlags)
 	}
 
-	CCRule = ninja.NewRule("cc", cc+" -$cflags -c $in -o $out")
-	compiler := &ninja.Compiler{
+	CCRule = ninja.NewRule("cc", cc+" $cflags -c $in -o $out")
+	return &Compiler{
 		Vars:  []*ninja.Var{CFlags},
 		Rules: []*ninja.Rule{CCRule},
 	}
-
-	if bp.Compilers == nil {
-		bp.Compilers = map[string]*ninja.Compiler{}
-	}
-	bp.Compilers[cc] = compiler
 }

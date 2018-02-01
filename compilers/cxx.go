@@ -9,15 +9,9 @@ import (
 	"github.com/kisom/ng/ninja"
 )
 
-func CXX(cxx string) *ninja.Rule {
-	return ninja.NewRule("cxx", cxx+" $cxxflags -c $in -o $out")
-}
+var CXXExts = []string{"cc", "cxx", "c++"}
 
-var (
-	CXXExts = []string{"cc", "cxx", "c++"}
-)
-
-func EnableCXX(bp *ninja.BuildPlan, cxx string, debugMode bool) {
+func CXX(cxx string, debugMode bool) *Compiler {
 	var (
 		CXXFlags *ninja.Var
 		CXXRule  *ninja.Rule
@@ -31,7 +25,7 @@ func EnableCXX(bp *ninja.BuildPlan, cxx string, debugMode bool) {
 	CXXFlags = ninja.NewVar("cxxflags", debug)
 	CXXFlags.Append("-Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align")
 	CXXFlags.Append(" -Wwrite-strings -Wmissing-declarations -Wno-long-long -Werror")
-	CXXFlags.Append(" -Wunused-variable -std=c++17 -D_XOPEN_SOURCE-I.")
+	CXXFlags.Append(" -Wunused-variable -std=c++14 -D_XOPEN_SOURCE-I.")
 	CXXFlags.Append(" -fno-elide-constructors -Weffc++ -fPIC")
 	envFlags := os.Getenv("CXXFLAGS")
 	if len(envFlags) > 0 {
@@ -39,15 +33,10 @@ func EnableCXX(bp *ninja.BuildPlan, cxx string, debugMode bool) {
 	}
 
 	CXXRule = ninja.NewRule("cxx", cxx+" $cxxflags -c $in -o $out")
-	compiler := &ninja.Compiler{
+	return &Compiler{
 		Vars:  []*ninja.Var{CXXFlags},
 		Rules: []*ninja.Rule{CXXRule},
 	}
-
-	if bp.Compilers == nil {
-		bp.Compilers = map[string]*ninja.Compiler{}
-	}
-	bp.Compilers[cxx] = compiler
 }
 
 func CXXScanTargets(cfg *config.Config) error {
