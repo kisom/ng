@@ -57,7 +57,7 @@ func (c *Config) Setup() {
 }
 
 func Parse(in []byte) (*Config, error) {
-	cfg := &Config{}
+	cfg := &Config{Debug: true}
 	err := yaml.Unmarshal(in, cfg)
 	if err != nil {
 		return nil, err

@@ -2,6 +2,9 @@ A ninja build plan generator for relatively simple projects. It uses a YAML
 build plan file (by default named build.yaml):
 
 ----- build.yaml ----
+# debug is optional, and is used to turn off debug builds.
+debug: no
+
 # compilers section is optional; ng will also check the relevant
 # environment variables, too and fill in a sensible default.
 compilers:

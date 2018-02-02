@@ -25,7 +25,7 @@ func CXX(cxx string, debugMode bool) *Compiler {
 	CXXFlags = ninja.NewVar("cxxflags", debug)
 	CXXFlags.Append("-Wall -Wextra -pedantic -Wshadow -Wpointer-arith -Wcast-align")
 	CXXFlags.Append(" -Wwrite-strings -Wmissing-declarations -Wno-long-long -Werror")
-	CXXFlags.Append(" -Wunused-variable -std=c++14 -D_XOPEN_SOURCE-I.")
+	CXXFlags.Append(" -Wunused-variable -std=c++14 -D_XOPEN_SOURCE -I.")
 	CXXFlags.Append(" -fno-elide-constructors -Weffc++ -fPIC")
 	envFlags := os.Getenv("CXXFLAGS")
 	if len(envFlags) > 0 {
