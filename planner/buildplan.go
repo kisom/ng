@@ -69,12 +69,12 @@ func (bp *Plan) Execute(cfg *config.Config) error {
 	}
 
 	if cfg.RequiresCC() && bp.Compilers["cc"] == nil {
-		bp.addCompiler("cc", compilers.CC(cfg.Compilers.CC, cfg.Debug))
+		bp.addCompiler("cc", compilers.CC(cfg.Compilers.CC, cfg.Debug, !cfg.NoDeps))
 		bp.addCompiler("ld", compilers.LD(cfg.Compilers.LD))
 	}
 
 	if cfg.RequiresCXX() && bp.Compilers["cxx"] == nil {
-		bp.addCompiler("cxx", compilers.CXX(cfg.Compilers.CXX, cfg.Debug))
+		bp.addCompiler("cxx", compilers.CXX(cfg.Compilers.CXX, cfg.Debug, !cfg.NoDeps))
 		bp.addCompiler("ld", compilers.LD(cfg.Compilers.LD))
 
 		err := compilers.CXXScanTargets(cfg)

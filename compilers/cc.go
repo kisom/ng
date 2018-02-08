@@ -8,7 +8,7 @@ import (
 
 var CCExts = []string{"c"}
 
-func CC(cc string, debugMode bool) *Compiler {
+func CC(cc string, debugMode, deps bool) *Compiler {
 	var (
 		CFlags *ninja.Var
 		CCRule *ninja.Rule
@@ -24,12 +24,23 @@ func CC(cc string, debugMode bool) *Compiler {
 	CFlags.Append(" -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations")
 	CFlags.Append(" -Wnested-externs -Winline -Wno-long-long -Wunused-variable")
 	CFlags.Append(" -Wstrict-prototypes -Werror")
+
 	envFlags := os.Getenv("CFLAGS")
 	if len(envFlags) > 0 {
 		CFlags.Append(" " + envFlags)
 	}
 
-	CCRule = ninja.NewRule("cc", cc+" $cflags -c $in -o $out")
+	depFlags := ""
+	if deps {
+		depFlags = "-MD -MF $out.d "
+	}
+
+	CCRule = ninja.NewRule("cc", cc+" $cflags "+depFlags+"-c $in -o $out")
+	if deps {
+		CCRule.SetVar("depfile", "$out.d")
+		CCRule.SetVar("deps", "gcc")
+	}
+
 	return &Compiler{
 		Vars:  []*ninja.Var{CFlags},
 		Rules: []*ninja.Rule{CCRule},

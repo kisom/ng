@@ -40,6 +40,7 @@ type Targets struct {
 
 type Config struct {
 	Debug     bool       `json:"debug" yaml:"debug"`
+	NoDeps    bool       `json:"no_deps" yaml:"no_deps"`
 	Compilers *Compilers `json:"compilers" yaml:"compilers"`
 	Targets   *Targets   `json:"targets" yaml:"targets"`
 }

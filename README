@@ -1,5 +1,6 @@
-A ninja build plan generator for relatively simple projects. It uses a YAML
-build plan file (by default named build.yaml):
+A ninja build plan generator for relatively simple projects, see the
+end of the doc for caveats. It uses a YAML build plan file (by default
+named build.yaml):
 
 ----- build.yaml ----
 # debug is optional, and is used to turn off debug builds.
@@ -64,4 +65,5 @@ build ch01ex01: ld ch01ex01.o
 The tool is pretty dumb and just a quick way to quickly update build
 configs. The code was hacked out quickly, rewritten once before I had
 a working version, and very ad-hoc. A half-assed attempted at adding
-some unit tests fizzled out.
+some unit tests fizzled out. This is a tool that solves my particular
+problems and probably won't do what you want to.

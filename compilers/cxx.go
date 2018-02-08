@@ -11,7 +11,7 @@ import (
 
 var CXXExts = []string{"cc", "cxx", "c++"}
 
-func CXX(cxx string, debugMode bool) *Compiler {
+func CXX(cxx string, debugMode, deps bool) *Compiler {
 	var (
 		CXXFlags *ninja.Var
 		CXXRule  *ninja.Rule
@@ -27,12 +27,23 @@ func CXX(cxx string, debugMode bool) *Compiler {
 	CXXFlags.Append(" -Wwrite-strings -Wmissing-declarations -Wno-long-long -Werror")
 	CXXFlags.Append(" -Wunused-variable -std=c++14 -D_XOPEN_SOURCE -I.")
 	CXXFlags.Append(" -fno-elide-constructors -Weffc++ -fPIC")
+
 	envFlags := os.Getenv("CXXFLAGS")
 	if len(envFlags) > 0 {
 		CXXFlags.Append(" " + envFlags)
 	}
 
-	CXXRule = ninja.NewRule("cxx", cxx+" $cxxflags -c $in -o $out")
+	depFlags := ""
+	if deps {
+		depFlags = "-MD -MF $out.d "
+	}
+
+	CXXRule = ninja.NewRule("cxx", cxx+" $cxxflags "+depFlags+"-c $in -o $out")
+	if deps {
+		CXXRule.SetVar("depfile", "$out.d")
+		CXXRule.SetVar("deps", "gcc")
+	}
+
 	return &Compiler{
 		Vars:  []*ninja.Var{CXXFlags},
 		Rules: []*ninja.Rule{CXXRule},
